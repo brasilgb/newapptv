@@ -8,6 +8,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: "var(--font-poppins)",
+        roboto: "var(--font-roboto)",
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
