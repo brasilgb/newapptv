@@ -1,10 +1,13 @@
 import React from 'react'
 import DropDownMenu from './DropDownMenu'
 import LinkAnalise from './LinkAnalise'
+import { usePathname } from 'next/navigation'
 
 type Props = {}
 
 const Header = (props: Props) => {
+  const pathname = usePathname();
+
   return (
     <header className='h-12 bg-white flex items-center justify-between px-4 border-b mb-2'>
       <div className='h-12 w-12'>
@@ -13,18 +16,18 @@ const Header = (props: Props) => {
       <div className='flex items-center gap-8'>
         <LinkAnalise
           label="Resumos diário"
-          url="#"
-          active
+          url="/"
+          active={pathname === '/' ? true : false}
         />
         <LinkAnalise
           label="Resumos Mensal"
-          url="#"
-          active={false}
+          url="/mensal"
+          active={pathname === '/mensal' ? true : false}
         />
         <LinkAnalise
           label="Resumos Anual"
-          url="#"
-          active={false}
+          url="/anual"
+          active={pathname === '/anual' ? true : false}
         />
       </div>
       <div>

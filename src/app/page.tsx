@@ -1,10 +1,10 @@
 'use client'
 import BigBox from '@/components/BigBox'
 import MiddleBox from '@/components/MiddleBox'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuthContext } from '@/contexts/AuthContext'
+import 'animate.css';
 import birel from '@/services/birel'
 import React, { useEffect, useState } from 'react'
+import Loading from './loading';
 
 type Props = {}
 
@@ -26,7 +26,7 @@ const Home = (props: Props) => {
 
   return (
     <>
-      <div className='grid grid-cols-2 gap-2 px-2'>
+      <div className='grid grid-cols-2 gap-2 px-2 animate__animated animate__fadeIn'>
         <div className='flex flex-col gap-2 bg-[#1a9cd9] p-2 rounded-md'>
           <BigBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={1} tipo="Diária"/>
           <div className='grid grid-cols-2 gap-2 '>
@@ -39,7 +39,7 @@ const Home = (props: Props) => {
           <BigBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={5} tipo="Diária"/>
           <div className='grid grid-cols-2 gap-2 '>
             <MiddleBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={5} tipo="Mensal"/>
-            <MiddleBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAlcancadaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={5} tipo="Anual"/>
+            <MiddleBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={5} tipo="Anual"/>
           </div>
         </div>
       </div>
