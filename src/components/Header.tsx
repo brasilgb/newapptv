@@ -29,6 +29,11 @@ const Header = (props: Props) => {
           url="/anual"
           active={pathname === '/anual' ? true : false}
         />
+        <LinkAnalise
+          label="Evolução do Mês"
+          url="/evolucao"
+          active={pathname === '/evolucao' ? true : false}
+        />
       </div>
       <div>
         <DropDownMenu />

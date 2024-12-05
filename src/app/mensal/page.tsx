@@ -5,9 +5,7 @@ import birel from '@/services/birel';
 import React, { useEffect, useState } from 'react'
 import 'animate.css';
 
-type Props = {}
-
-const AnaliseMensal = (props: Props) => {
+const AnaliseMensal = () => {
 
   const [dataTv, setDataTv] = useState<any>([]);
 
@@ -25,20 +23,20 @@ const AnaliseMensal = (props: Props) => {
   
   return (
     <>
-    <div className='grid grid-cols-2 gap-2 px-2 animate__animated animate__fadeIn'>
-      <div className='flex flex-col gap-2 bg-[#1a9cd9] p-2 rounded-md'>
-        <BigBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={1} tipo="Mensal"/>
-        <div className='grid grid-cols-2 gap-2 '>
-          <MiddleBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={1} tipo="Anual"/>
-          <MiddleBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={1} tipo="Diária"/>
+    <div className='grid grid-cols-2 px-2 animate__animated animate__fadeIn h-full min-h-[calc(100vh-82px)]'>
+      <div className='flex flex-col gap-2 bg-[#1a9cd9] p-2 rounded-l-md h-[100%]'>
+        <BigBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={1} tipo={`Mês ${dataTv?.Mes}`}/>
+        <div className='grid grid-cols-2 gap-2 h-[41.5%]'>
+          <MiddleBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={1} tipo={`Ano ${dataTv?.Ano}`}/>
+          <MiddleBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={1} tipo={`Dia ${dataTv?.Dia}`}/>
         </div>
       </div>
 
-      <div className='flex flex-col gap-2 bg-[#f9b233] p-2 rounded-md'>
-        <BigBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={5} tipo="Mensal"/>
-        <div className='grid grid-cols-2 gap-2 '>
-          <MiddleBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={5} tipo="Anual"/>
-          <MiddleBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={5} tipo="Diária"/>
+      <div className='flex flex-col gap-2 bg-[#f9b233] p-2 rounded-r-md h-100%'>
+        <BigBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={5} tipo={`Mês ${dataTv?.Mes}`}/>
+        <div className='grid grid-cols-2 gap-2 h-[41.5%]'>
+          <MiddleBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={5} tipo={`Ano ${dataTv?.Ano}`}/>
+          <MiddleBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={5} tipo={`Dia ${dataTv?.Dia}`}/>
         </div>
       </div>
     </div>

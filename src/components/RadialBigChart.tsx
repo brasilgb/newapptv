@@ -9,13 +9,10 @@ import {
 
 import {
     Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+    CardContent
 } from "@/components/ui/card"
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { useEffect } from "react";
 
 export const description = "A radial chart with text";
 
@@ -42,7 +39,7 @@ const RadialBigChart = ({ title, label, value, departamento }: RadialChartProps)
     } satisfies ChartConfig
 
     return (
-        <Card className="flex flex-col relative">
+        <Card className="flex flex-col border-none shadow-none">
             {/* <div className="flex self-end p-4 absolute text-gray-500"><Percent size={28} /></div> */}
             {/* <CardHeader className="items-center pb-0">
                 <CardTitle>{title}</CardTitle>
@@ -57,15 +54,15 @@ const RadialBigChart = ({ title, label, value, departamento }: RadialChartProps)
                         data={chartData}
                         startAngle={90}
                         endAngle={(value * 360) + 90}
-                        innerRadius={78}
-                        outerRadius={115}
+                        innerRadius={100}
+                        outerRadius={150}
                     >
                         <PolarGrid
                             gridType="circle"
                             radialLines={false}
                             stroke="none"
                             className="first:fill-[#e2e2e2] last:fill-white"
-                            polarRadius={[84, 70]}
+                            polarRadius={[110, 90]}
                         />
                         <RadialBar dataKey="visitors" background cornerRadius={10} />
                         <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
@@ -84,7 +81,7 @@ const RadialBigChart = ({ title, label, value, departamento }: RadialChartProps)
                                                     y={viewBox.cy}
                                                     className="fill-foreground text-4xl font-bold"
                                                 >
-                                                    {(parseFloat(chartData[0].visitors) * 100)}%
+                                                    {(parseFloat(chartData[0].visitors) * 100).toFixed(0)}%
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
