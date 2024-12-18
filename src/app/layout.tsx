@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { checkIsPublicRoute } from "./functions/check-is-public-route";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PrivateRoute from "@/components/privateroute";
+import Loading from './loading';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700', '900'],

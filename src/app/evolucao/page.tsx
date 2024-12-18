@@ -12,7 +12,6 @@ import { Bar, CartesianGrid, ComposedChart, Legend, Line, XAxis, YAxis } from 'r
 import { SquareCheck } from 'lucide-react'
 import { parseValueMoney } from '@/Utils/mask'
 import birel from '@/services/birel'
-import { Card } from '@/components/ui/card'
 const Evolucao = () => {
 
     const [graficoTvLoja, setGraficoTvLoja] = useState<any>([]);
@@ -83,7 +82,7 @@ const Evolucao = () => {
                             <Legend />
                             <CartesianGrid stroke="#f5f5f5" />
                             <Bar dataKey="Venda" fill="#1a9cd9" />
-                            <Line type="monotone" dataKey="Meta" stroke="#e54757" />
+                            <Line type="monotone" dataKey="Meta" stroke="#e54757" strokeWidth={2} />
                         </ComposedChart>
                     </ChartContainer>
                 </div>
@@ -91,7 +90,7 @@ const Evolucao = () => {
             {graficoTvNatur &&
                 <div className='bg-[#f9b233] rounded-md p-2'>
                     <ChartContainer config={chartConfig} className="max-h-[calc(50vh-65px)] w-full bg-white p-2 rounded-md shadow-md">
-                        <ComposedChart data={graficoTvNatur}>
+                        <ComposedChart data={graficoTvNatur} >
                             <XAxis
                                 dataKey="DiaSemana"
                                 tickLine={true}
@@ -117,7 +116,7 @@ const Evolucao = () => {
                             <Legend />
                             <CartesianGrid stroke="#f5f5f5" />
                             <Bar dataKey="Venda" fill="#f9b233" />
-                            <Line type="monotone" dataKey="Meta" stroke="#e54757" />
+                            <Line type="monotone" dataKey="Meta" stroke="#e54757" strokeWidth={2} />
                         </ComposedChart>
                     </ChartContainer>
                 </div>
