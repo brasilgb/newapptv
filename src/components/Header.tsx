@@ -44,17 +44,17 @@ const Header = (props: Props) => {
       </div>
       <div className='flex items-center gap-8'>
         <LinkAnalise
-          label="Resumos diário"
+          label="Resumo diário"
           url="/"
           active={pathname === '/' ? true : false}
         />
         <LinkAnalise
-          label="Resumos Mensal"
+          label="Resumo Mensal"
           url="/mensal"
           active={pathname === '/mensal' ? true : false}
         />
         <LinkAnalise
-          label="Resumos Anual"
+          label="Resumo Anual"
           url="/anual"
           active={pathname === '/anual' ? true : false}
         />
