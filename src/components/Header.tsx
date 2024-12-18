@@ -16,7 +16,7 @@ const Header = (props: Props) => {
         case '/': return router.push("/mensal");
         case '/mensal': return router.push("/anual");
         case '/anual': return router.push("/evolucao");
-        case '/evolucao': window.location.reload(); return router.push("/");
+        case '/evolucao': window.location.href = '/apptv';
         default: return false;
       };
     }, 15000);
