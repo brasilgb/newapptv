@@ -12,13 +12,15 @@ import Loading from './loading';
 const roboto = Roboto({
   weight: ['300', '400', '500', '700', '900'],
   display: 'swap',
-  variable: '--font-roboto'
+  variable: '--font-roboto',
+  subsets: ['latin']
 })
 
 const poppins = Poppins({
   weight: ['300', '400', '500', '700', '900'],
   display: 'swap',
-  variable: '--font-poppins'
+  variable: '--font-poppins',
+  subsets: ['latin']
 })
 
 export default function RootLayout({
@@ -32,7 +34,7 @@ export default function RootLayout({
 
     <html lang="en">
       <body
-        className={`${roboto.className} ${poppins.className} antialiased`}
+        className={`${roboto.className} antialiased`}
       >
         <div className="min-h-screen flex flex-col">
           <AuthProvider>
