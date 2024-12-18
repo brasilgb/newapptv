@@ -46,18 +46,6 @@
       "static/chunks/835-41fa62cd14013df0.js",
       "static/chunks/app/evolucao/page-4bd21cc2093e0073.js"
     ],
-    "/page": [
-      "static/chunks/webpack-5fa0c7c2fd51aec3.js",
-      "static/chunks/4bd1b696-90bc37b7e2cc8975.js",
-      "static/chunks/517-208950fc2575b051.js",
-      "static/chunks/main-app-2992e6b5b3c9c7f9.js",
-      "static/css/7c81f1e1351f6790.css",
-      "static/chunks/183-b76e81b04787ade8.js",
-      "static/chunks/205-68dcaf3d43f35740.js",
-      "static/chunks/649-10f96b051329047c.js",
-      "static/chunks/585-0a938a4de92d645c.js",
-      "static/chunks/app/page-4311ca34e4ea461e.js"
-    ],
     "/mensal/page": [
       "static/chunks/webpack-5fa0c7c2fd51aec3.js",
       "static/chunks/4bd1b696-90bc37b7e2cc8975.js",
@@ -69,6 +57,18 @@
       "static/chunks/649-10f96b051329047c.js",
       "static/chunks/585-0a938a4de92d645c.js",
       "static/chunks/app/mensal/page-12c8943aa767d037.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-5fa0c7c2fd51aec3.js",
+      "static/chunks/4bd1b696-90bc37b7e2cc8975.js",
+      "static/chunks/517-208950fc2575b051.js",
+      "static/chunks/main-app-2992e6b5b3c9c7f9.js",
+      "static/css/7c81f1e1351f6790.css",
+      "static/chunks/183-b76e81b04787ade8.js",
+      "static/chunks/205-68dcaf3d43f35740.js",
+      "static/chunks/649-10f96b051329047c.js",
+      "static/chunks/585-0a938a4de92d645c.js",
+      "static/chunks/app/page-4311ca34e4ea461e.js"
     ]
   }
 }
