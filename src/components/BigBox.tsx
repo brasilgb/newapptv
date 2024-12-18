@@ -10,6 +10,8 @@ interface BigBoxProps {
     performance: number;
     departamento: number;
     tipo: string;
+    dualchart?: boolean;
+    acumuladames?: string;
 }
 
 const BigBox = (props: BigBoxProps) => {
@@ -38,7 +40,15 @@ const BigBox = (props: BigBoxProps) => {
                 <KpiBigBox title="Falta Vender" value={props?.faltavender} />
             </CardContent>
             <CardContent className={`${hDisplay > 927 ? 'p-12' : 'p-2'}`}>
-                <RadialBigChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
+                {props.dualchart &&
+                    <div className="grid grid-cols-2">
+                        <RadialBigChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
+                        <RadialBigChart title={'Meta Acumul.'} label={'Meta Acumul.'} value={props?.acumuladames} departamento={props?.departamento} />
+                    </div>
+                }
+                {!props.dualchart &&
+                    <RadialBigChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
+                }
             </CardContent>
         </Card>
     )

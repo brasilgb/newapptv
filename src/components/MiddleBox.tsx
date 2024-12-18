@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from './ui/card';
 import KpiMiddleBox from './KpiMiddleBox';
 import RadialMiddleChart from './RadialMiddleChart';
+import RadialMinChart from './RadialMinChart';
 
 interface MiddleBoxProps {
     meta: number;
@@ -10,6 +11,8 @@ interface MiddleBoxProps {
     performance: string;
     departamento: number;
     tipo: string;
+    dualchart?: boolean;
+    acumuladames?: string;
 }
 
 const MiddleBox = (props: MiddleBoxProps) => {
@@ -22,7 +25,15 @@ const MiddleBox = (props: MiddleBoxProps) => {
                 <KpiMiddleBox title="Falta Vender" value={props?.faltavender} />
             </CardContent>
             <CardContent className='p-2'>
-                <RadialMiddleChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
+                {props.dualchart &&
+                    <div className="grid grid-cols-2">
+                        <RadialMinChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
+                        <RadialMinChart title={'Performance'} label={'Meta Acumul.'} value={props?.acumuladames} departamento={props?.departamento} />
+                    </div>
+                }
+                {!props.dualchart &&
+                    <RadialMiddleChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
+                }
             </CardContent>
         </Card>
     )

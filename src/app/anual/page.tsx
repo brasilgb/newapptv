@@ -8,14 +8,30 @@ import 'animate.css';
 type Props = {}
 
 const AnaliseAnual = (props: Props) => {
-
-  const [dataTv, setDataTv] = useState<any>([]);
+  const [dataTvLoja, setDataTvLoja] = useState<any>([]);
+  const [dataTvNatur, setDataTvNatur] = useState<any>([]);
 
   useEffect(() => {
     const getDataTv = async () => {
-      await birel.get('(APPTV_ANALISE_LOJAS)')
+      await birel.post('(APPTV_ANALISE_DEPTO)',{
+        departamento: 1
+      })
         .then((res) => {
-          setDataTv(res.data.bi091.bidata[0]);
+          setDataTvLoja(res.data.bi091.bidata[0]);
+        }).catch((err) => {
+          console.log(err);
+        })
+    };
+    getDataTv();
+  }, []);
+
+  useEffect(() => {
+    const getDataTv = async () => {
+      await birel.post('(APPTV_ANALISE_DEPTO)',{
+        departamento: 5
+      })
+        .then((res) => {
+          setDataTvNatur(res.data.bi091.bidata[0]);
         }).catch((err) => {
           console.log(err);
         })
@@ -27,18 +43,18 @@ const AnaliseAnual = (props: Props) => {
     <>
       <div className='grid grid-cols-2 px-2 animate__animated animate__fadeIn min-h-[calc(100vh-82px)]'>
         <div className='flex flex-col gap-2 bg-[#1a9cd9] p-2 rounded-l-md h-[100%]'>
-          <BigBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={1} tipo={`Ano ${dataTv?.Ano}`} />
+          <BigBox meta={dataTvLoja?.MetaAcumuladaAno} vendas={dataTvLoja?.VendaAno} faltavender={dataTvLoja?.DiferencaAno} performance={dataTvLoja?.PerformanceAno} departamento={1} tipo={`Ano ${dataTvLoja?.Ano}`} />
           <div className='grid grid-cols-2 gap-2 h-[41.5%]'>
-            <MiddleBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={1} tipo={`Dia ${dataTv?.Dia}`} />
-            <MiddleBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={1} tipo={`Mês ${dataTv?.Mes}`} />
+            <MiddleBox meta={dataTvLoja?.MetaDia} vendas={dataTvLoja?.VendaDia} faltavender={dataTvLoja?.DiferencaDia} performance={dataTvLoja?.PerformanceDia} departamento={1} tipo={`Dia ${dataTvLoja?.Dia}`} />
+            <MiddleBox dualchart acumuladames={dataTvLoja?.MetaAcumuladames} meta={dataTvLoja?.MetaMes} vendas={dataTvLoja?.VendaMes} faltavender={dataTvLoja?.DiferencaMes} performance={dataTvLoja?.PerformanceMes} departamento={1} tipo={`Mês ${dataTvLoja?.Mes}`} />
           </div>
         </div>
 
         <div className='flex flex-col gap-2 bg-[#f9b233] p-2 rounded-r-md h-[100%]'>
-          <BigBox meta={dataTv?.MetaAcumuladaAno} vendas={dataTv?.VendaAno} faltavender={dataTv?.DiferencaAno} performance={dataTv?.PerformanceAno} departamento={5} tipo={`Anual ${dataTv?.Ano}`} />
+          <BigBox meta={dataTvNatur?.MetaAcumuladaAno} vendas={dataTvNatur?.VendaAno} faltavender={dataTvNatur?.DiferencaAno} performance={dataTvNatur?.PerformanceAno} departamento={5} tipo={`Anual ${dataTvNatur?.Ano}`} />
           <div className='grid grid-cols-2 gap-2 h-[41.5%]'>
-            <MiddleBox meta={dataTv?.MetaDia} vendas={dataTv?.VendaDia} faltavender={dataTv?.DiferencaDia} performance={dataTv?.PerformanceDia} departamento={5} tipo={`Dia ${dataTv?.Dia}`} />
-            <MiddleBox meta={dataTv?.MetaMes} vendas={dataTv?.VendaMes} faltavender={dataTv?.DiferencaMes} performance={dataTv?.PerformanceMes} departamento={5} tipo={`Mês ${dataTv?.Mes}`} />
+            <MiddleBox meta={dataTvNatur?.MetaDia} vendas={dataTvNatur?.VendaDia} faltavender={dataTvNatur?.DiferencaDia} performance={dataTvNatur?.PerformanceDia} departamento={5} tipo={`Dia ${dataTvNatur?.Dia}`} />
+            <MiddleBox dualchart acumuladames={dataTvNatur?.MetaAcumuladames} meta={dataTvNatur?.MetaMes} vendas={dataTvNatur?.VendaMes} faltavender={dataTvNatur?.DiferencaMes} performance={dataTvNatur?.PerformanceMes} departamento={5} tipo={`Mês ${dataTvNatur?.Mes}`} />
           </div>
         </div>
       </div>

@@ -10,8 +10,9 @@ const Header = (props: Props) => {
 
   return (
     <header className='h-12 bg-white flex items-center justify-between px-4 border-b mb-2'>
-      <div className='h-12 w-12'>
-        <img src="./images/icon.png" alt="" />
+      <div className='h-12 '>
+        <img src="./images/logo_loja.png" alt="" />
+        <img src="./images/logo_naturovos.png" alt="" />
       </div>
       <div className='flex items-center gap-8'>
         <LinkAnalise
