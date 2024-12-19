@@ -13,9 +13,9 @@ const Header = (props: Props) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       switch (pathname) {
-        case '/': window.location.href = '/apptv/mensal';
-        case '/mensal': window.location.href = '/apptv/anual';
-        case '/anual': window.location.href = '/apptv/evolucao';
+        case '/': window.location.href = '/mensal';
+        case '/mensal': window.location.href = '/anual';
+        case '/anual': window.location.href = '/evolucao';
         case '/evolucao': window.location.href = '/apptv';
         default: return false;
       };
