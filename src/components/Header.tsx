@@ -13,10 +13,10 @@ const Header = (props: Props) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       switch (pathname) {
-        case '/': window.location.href = 'https://portal.gruposolar.com.br/apptv/mensal';
-        case '/mensal': window.location.href = 'https://portal.gruposolar.com.br/apptv/anual';
-        case '/anual': window.location.href = 'https://portal.gruposolar.com.br/apptv/evolucao';
-        case '/evolucao': window.location.href = 'https://portal.gruposolar.com.br/apptv';
+        case '/': return window.location.href = 'https://portal.gruposolar.com.br/apptv/mensal';
+        case '/mensal': return window.location.href = 'https://portal.gruposolar.com.br/apptv/anual';
+        case '/anual': return window.location.href = 'https://portal.gruposolar.com.br/apptv/evolucao';
+        case '/evolucao': return window.location.href = 'https://portal.gruposolar.com.br/apptv';
         default: return false;
       };
     }, 15000);
