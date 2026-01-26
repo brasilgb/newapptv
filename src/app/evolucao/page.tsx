@@ -12,6 +12,7 @@ import { Bar, CartesianGrid, ComposedChart, Legend, Line, XAxis, YAxis } from 'r
 import { SquareCheck } from 'lucide-react'
 import { parseValueMoney } from '@/Utils/mask'
 import birel from '@/services/birel'
+import moment from 'moment'
 const Evolucao = () => {
 
     const [graficoTvLoja, setGraficoTvLoja] = useState<any>([]);
@@ -29,7 +30,9 @@ const Evolucao = () => {
                 departamento: 1
             })
                 .then((res) => {
-                    setGraficoTvLoja(res.data.bi092.bidata);
+                    const dataSolar = res.data.bi092.bidata;
+                    const solarFitered = dataSolar.filter((ds: any) => ds.DataChave === Number(moment().format('YYYYMM')))
+                    setGraficoTvLoja(solarFitered);
                 }).catch((err) => {
                     console.log(err);
                 })
@@ -43,7 +46,9 @@ const Evolucao = () => {
                 departamento: 5
             })
                 .then((res) => {
-                    setGraficoTvNatur(res.data.bi092.bidata);
+                    const dataNatur = res.data.bi092.bidata;
+                    const naturFitered = dataNatur.filter((ds: any) => ds.DataChave === Number(moment().format('YYYYMM')))
+                    setGraficoTvNatur(naturFitered);
                 }).catch((err) => {
                     console.log(err);
                 })

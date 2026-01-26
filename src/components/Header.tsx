@@ -10,18 +10,18 @@ const Header = (props: Props) => {
   const router = useRouter();
   const [atualizacao, setAtualizacao] = useState<any>([]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      switch (pathname) {
-        case '/': return window.location.href = 'https://portal.gruposolar.com.br/apptv/mensal';
-        case '/mensal': return window.location.href = 'https://portal.gruposolar.com.br/apptv/anual';
-        case '/anual': return window.location.href = 'https://portal.gruposolar.com.br/apptv/evolucao';
-        case '/evolucao': return window.location.href = 'https://portal.gruposolar.com.br/apptv';
-        default: return false;
-      };
-    }, 15000);
-    return () => clearTimeout(timeout);
-  }, [pathname, router]);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     switch (pathname) {
+  //       case '/': return window.location.href = 'https://portal.gruposolar.com.br/apptv/mensal';
+  //       case '/mensal': return window.location.href = 'https://portal.gruposolar.com.br/apptv/anual';
+  //       case '/anual': return window.location.href = 'https://portal.gruposolar.com.br/apptv/evolucao';
+  //       case '/evolucao': return window.location.href = 'https://portal.gruposolar.com.br/apptv';
+  //       default: return false;
+  //     };
+  //   }, 15000);
+  //   return () => clearTimeout(timeout);
+  // }, [pathname, router]);
 
   useEffect(() => {
     const getDataTv = async () => {

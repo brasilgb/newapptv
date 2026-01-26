@@ -4,8 +4,6 @@ import MiddleBox from '@/components/MiddleBox'
 import 'animate.css';
 import birel from '@/services/birel'
 import React, { useEffect, useState } from 'react'
-import TInput from '@/components/TInput';
-import TSelect from '@/components/TSelect';
 
 const Home = () => {
 
