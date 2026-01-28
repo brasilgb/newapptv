@@ -1,7 +1,8 @@
 {
-  "/evolucao/page": "app/evolucao/page.js",
+  "/page": "app/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/anual/page": "app/anual/page.js",
   "/mensal/page": "app/mensal/page.js",
-  "/page": "app/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/evolucao/page": "app/evolucao/page.js",
+  "/anual/page": "app/anual/page.js"
 }

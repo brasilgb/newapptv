@@ -8,6 +8,7 @@ import { checkIsPublicRoute } from "./functions/check-is-public-route";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PrivateRoute from "@/components/privateroute";
 import Loading from './loading';
+import NoSleepVideo from '@/lib/NoSleepVideo';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700', '900'],
@@ -36,6 +37,8 @@ export default function RootLayout({
       <body
         className={`${roboto.className} antialiased`}
       >
+        <NoSleepVideo />
+        {isPublicPage && <Loading />}
         <div className="min-h-screen flex flex-col">
           <AuthProvider>
             {isPublicPage && children}
