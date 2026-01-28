@@ -2,17 +2,14 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function NoSleepDiagnostic() {
+export default function NoSleepSilent() {
   const videoRef = useRef(null);
-  const [status, setStatus] = useState('idle');
-  const [message, setMessage] = useState('Carregando...');
-  const [showButton, setShowButton] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const attemptPlay = async () => {
-    if (!videoRef.current) return; // Ensure videoRef.current is not null
-
-    setStatus('loading');
-    setMessage('Iniciando vídeo local...');
+    if (!videoRef.current) return;
 
     try {
       // Importante para TV: Resetar o tempo. Cast to HTMLVideoElement to access play()
@@ -22,105 +19,108 @@ export default function NoSleepDiagnostic() {
       // Tenta tocar
       await videoElement.play();
       
-      setStatus('success');
-      setMessage('✅ MODO ATIVO (Arquivo Local)');
-      setTimeout(() => setShowButton(false), 3000);
+      // SUCESSO:
+      setIsPlaying(true);
+      setShowMenu(false); // Esconde o menu se funcionar
+      setErrorMessage('');
+      console.log('NoSleep: Ativo e rodando.');
 
-    } catch (err: any) {
-      console.error("Erro ao reproduzir:", err);
-      setStatus('error');
-      setMessage(`❌ Erro: ${err.name} - ${err.message}`);
+    } catch (err:any) {
+      // ERRO:
+      console.error("NoSleep: Bloqueado", err);
+      setIsPlaying(false);
+      setErrorMessage(err.message);
+      setShowMenu(true); // MOSTRA O MENU pois precisa de clique
     }
   };
 
   useEffect(() => {
-    // Tenta rodar assim que o componente monta
     attemptPlay();
   }, []);
 
   return (
-    <div style={{ position: 'fixed', zIndex: 9999, bottom: 20, right: 20, fontFamily: 'sans-serif' }}>
+    <div style={{ position: 'fixed', zIndex: 9999, bottom: 10, right: 10, fontFamily: 'sans-serif' }}>
       
-      {/* VÍDEO APONTANDO PARA A PASTA PUBLIC */}
+      {/* VÍDEO (Motor invisível) - Certifique-se que o arquivo está em /public/blank.mp4 */}
       <video
         ref={videoRef}
         loop
         muted
         playsInline
         preload="auto"
-        crossOrigin="anonymous" // Importante para recursos externos
-        // Usamos este vídeo clássico de teste do projeto Big Buck Bunny
-        // É garantido que funciona em qualquer browser moderno
-        src="/apptv/blank.mp4"
-        style={{ 
-          position: 'fixed', // Mudamos para fixed para garantir que fique no viewport
-          top: 0,
-          left: 0,
-          width: '10px', // Aumentamos um pouco o tamanho (1px as vezes buga a TV)
-          height: '10px',
-          opacity: 0.01, 
-          pointerEvents: 'none',
-          zIndex: -1
-        }}
+        src="/apptv/blank.mp4" 
+        style={{ position: 'absolute', width: 1, height: 1, opacity: 0.01, pointerEvents: 'none' }}
       />
 
-      {/* PAINEL DE FEEDBACK */}
-      {showButton && (
+      {/* --- BOTÃO/MENU DE CONTROLE (Só aparece se der erro ou se clicar na bolinha) --- */}
+      {showMenu && (
         <div style={{
-          backgroundColor: 'rgba(0,0,0,0.9)',
+          backgroundColor: 'rgba(0,0,0,0.85)',
           color: 'white',
-          padding: '15px',
+          padding: '12px',
           borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '10px',
-          maxWidth: '300px'
+          gap: '8px',
+          marginBottom: '10px',
+          boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+          fontSize: '12px',
+          maxWidth: '200px'
         }}>
-          <div style={{ 
-            width: '100%', 
-            padding: '5px', 
-            borderRadius: '4px',
-            textAlign: 'center',
-            backgroundColor: status === 'success' ? '#2ecc71' : status === 'error' ? '#e74c3c' : '#3498db',
-            fontWeight: 'bold'
-          }}>
-            {status === 'success' ? 'ONLINE' : status === 'error' ? 'ERRO' : 'CARREGANDO'}
-          </div>
+          {isPlaying ? (
+            <span style={{ color: '#2ecc71', fontWeight: 'bold' }}>✅ SISTEMA ATIVO</span>
+          ) : (
+            <span style={{ color: '#e74c3c', fontWeight: 'bold' }}>⚠️ AÇÃO NECESSÁRIA</span>
+          )}
 
-          <div style={{ fontSize: '12px', textAlign: 'center' }}>
-            {message}
-          </div>
+          {!isPlaying && (
+            <button
+              onClick={attemptPlay}
+              style={{
+                backgroundColor: '#e74c3c',
+                color: 'white',
+                border: 'none',
+                padding: '8px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              ATIVAR TELA
+            </button>
+          )}
 
-          <button
-            onClick={attemptPlay}
-            style={{
-              marginTop: '10px',
-              padding: '8px 16px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
+          <div style={{ fontSize: '10px', color: '#ccc', textAlign: 'center' }}>
+             {isPlaying ? "A TV não entrará em standby." : errorMessage || "Clique para permitir vídeo."}
+          </div>
+          
+          <button 
+            onClick={() => setShowMenu(false)}
+            style={{ background: 'transparent', border: '1px solid #555', color: '#aaa', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '10px'}}
           >
-            TENTAR NOVAMENTE
+            Fechar
           </button>
         </div>
       )}
 
-      {/* Bolinha Indicadora */}
-      {!showButton && (
-        <div 
-          onClick={() => setShowButton(true)}
-          style={{
-            width: '15px',
-            height: '15px',
-            borderRadius: '50%',
-            backgroundColor: '#2ecc71',
-            boxShadow: '0 0 10px #2ecc71',
-            cursor: 'pointer'
-          }}
-        />
-      )}
+      {/* --- INDICADOR DISCRETO (Sempre presente, mas quase invisível) --- */}
+      <div 
+        onClick={() => setShowMenu(!showMenu)} // Clicar aqui abre/fecha o menu
+        title={isPlaying ? "NoSleep: Ativo" : "NoSleep: Parado"}
+        style={{
+          width: '12px',
+          height: '12px',
+          borderRadius: '50%',
+          // Se estiver rodando: Verde bem clarinho e quase transparente
+          // Se estiver parado: Vermelho forte e pulsante para chamar atenção
+          backgroundColor: isPlaying ? '#2ecc71' : '#e74c3c',
+          opacity: isPlaying ? 0.2 : 1, // Quase some se estiver tudo bem
+          cursor: 'pointer',
+          transition: 'opacity 0.3s',
+          boxShadow: isPlaying ? 'none' : '0 0 8px red'
+        }}
+      />
     </div>
   );
 }
