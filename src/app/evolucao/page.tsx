@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     ChartConfig,
     ChartContainer,
@@ -7,129 +7,151 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 
-import { useEffect, useState } from "react"
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, XAxis, YAxis } from 'recharts'
 import { SquareCheck } from 'lucide-react'
 import { parseValueMoney } from '@/Utils/mask'
 import birel from '@/services/birel'
 import moment from 'moment'
-const Evolucao = () => {
+import { useAuthContext } from '@/contexts/AuthContext'
+import Loading from '../loading'
 
-    const [graficoTvLoja, setGraficoTvLoja] = useState<any>([]);
-    const [graficoTvNatur, setGraficoTvNatur] = useState<any>([]);
-    const chartConfig = {
-        Venda: {
-            label: "Vendas",
-            color: "hsl(var(--chart-1))",
-        },
-    } satisfies ChartConfig
+const chartConfig = {
+    Venda: {
+        label: "Vendas",
+        color: "hsl(var(--chart-1))",
+    },
+} satisfies ChartConfig
 
-    useEffect(() => {
-        const getGraficoTv = async () => {
-            await birel.post('(APPTV_GRAFICO_DEPTO)', {
-                departamento: 1
-            })
-                .then((res) => {
-                    const dataSolar = res.data.bi092.bidata;
-                    const solarFitered = dataSolar.filter((ds: any) => ds.DataChave === Number(moment().format('YYYYMM')))
-                    setGraficoTvLoja(solarFitered);
-                }).catch((err) => {
-                    console.log(err);
-                })
-        };
-        getGraficoTv();
-    }, []);
-
-    useEffect(() => {
-        const getGraficoTv = async () => {
-            await birel.post('(APPTV_GRAFICO_DEPTO)', {
-                departamento: 5
-            })
-                .then((res) => {
-                    const dataNatur = res.data.bi092.bidata;
-                    const naturFitered = dataNatur.filter((ds: any) => ds.DataChave === Number(moment().format('YYYYMM')))
-                    setGraficoTvNatur(naturFitered);
-                }).catch((err) => {
-                    console.log(err);
-                })
-        };
-        getGraficoTv();
-    }, []);
+const ChartBlock = ({ data, color, title }: any) => {
+    if (!data?.length) return null
 
     return (
-        <div className='px-2 flex flex-col w-full gap-4'>
-            {graficoTvLoja &&
-                <div className='bg-[#1a9cd9] rounded-md p-2 w-full'>
-                    <div className='w-full bg-white p-2 rounded-md shadow-md'>
-                        <ChartContainer config={chartConfig} className="max-h-[calc(48.5vh-65px)] w-full">
-                            <ComposedChart data={graficoTvLoja}>
-                                <XAxis
-                                    dataKey="DiaSemana"
-                                    tickLine={true}
-                                    axisLine={false}
-                                    tickMargin={8}
-                                />
-                                <YAxis />
-                                <ChartTooltip
-                                    cursor={false}
-                                    content={<ChartTooltipContent formatter={(value: any, name, props: any) => (
-                                        <div>
-                                            <p className="flex items-center gap-2">
-                                                {name == 'Venda' && <SquareCheck color={props.color} className={`w-4 h-4`} />}
-                                                {name == 'Venda' && name + ': ' + parseValueMoney(value)}
-                                            </p>
-                                            <p className="flex items-center gap-2">
-                                                {name == 'Meta' && <SquareCheck color={props.color} className={`w-4 h-4`} />}
-                                                {name == 'Meta' && name + ': ' + parseValueMoney(value)}
-                                            </p>
-                                        </div>
-                                    )} />}
-                                />
-                                <Legend />
-                                <CartesianGrid stroke="#f5f5f5" />
-                                <Bar dataKey="Venda" fill="#1a9cd9" />
-                                <Line type="monotone" dataKey="Meta" stroke="#e54757" strokeWidth={2} />
-                            </ComposedChart>
-                        </ChartContainer>
-                    </div>
-                </div>
+        <div className='w-full bg-white rounded-xl border border-gray-200 shadow-sm p-3'>
+
+            {/* TITLE */}
+            <div className='text-sm font-semibold text-gray-600 mb-2'>
+                {title}
+            </div>
+
+            <ChartContainer
+                config={chartConfig}
+                className="max-h-[calc(48vh-60px)] w-full"
+            >
+                <ComposedChart data={data}>
+
+                    <XAxis
+                        dataKey="DiaSemana"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={10}
+                        className="text-xs"
+                    />
+
+                    <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        className="text-xs"
+                    />
+
+                    <CartesianGrid stroke="#f1f5f9" vertical={false} />
+
+                    <ChartTooltip
+                        cursor={false}
+                        content={
+                            <ChartTooltipContent
+                                formatter={(value: any, name, props: any) => (
+                                    <div className="text-xs">
+                                        <p className="flex items-center gap-2">
+                                            <SquareCheck color={props.color} className="w-3 h-3" />
+                                            {name}: {parseValueMoney(value)}
+                                        </p>
+                                    </div>
+                                )}
+                            />
+                        }
+                    />
+
+                    <Legend />
+
+                    <Bar
+                        dataKey="Venda"
+                        fill={color}
+                        radius={[6, 6, 0, 0]}
+                    />
+
+                    <Line
+                        type="monotone"
+                        dataKey="Meta"
+                        stroke="#ef4444"
+                        strokeWidth={2}
+                        dot={false}
+                    />
+
+                </ComposedChart>
+            </ChartContainer>
+        </div>
+    )
+}
+
+const Evolucao = () => {
+
+    const { loading, setLoading } = useAuthContext();
+
+    const [data, setData] = useState<any>({
+        loja: [],
+        natur: []
+    })
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true)
+                const [lojaRes, naturRes] = await Promise.all([
+                    birel.post('(APPTV_GRAFICO_DEPTO)', { departamento: 1 }),
+                    birel.post('(APPTV_GRAFICO_DEPTO)', { departamento: 5 }),
+                ])
+
+                const currentMonth = Number(moment().format('YYYYMM'))
+
+                const filterData = (res: any) =>
+                    res.data.bi092.bidata.filter(
+                        (ds: any) => ds.DataChave === currentMonth
+                    )
+
+                setData({
+                    loja: filterData(lojaRes),
+                    natur: filterData(naturRes)
+                })
+
+            } catch (err) {
+                console.log(err)
+            } finally {
+                setLoading(false)
             }
-            {graficoTvNatur &&
-                <div className='bg-[#f9b233] rounded-md p-2 w-full'>
-                    <div className='w-full bg-white p-2 rounded-md shadow-md'>
-                        <ChartContainer config={chartConfig} className="max-h-[calc(48.5vh-65px)] w-full">
-                            <ComposedChart data={graficoTvNatur} >
-                                <XAxis
-                                    dataKey="DiaSemana"
-                                    tickLine={true}
-                                    axisLine={false}
-                                    tickMargin={8}
-                                />
-                                <YAxis />
-                                <ChartTooltip
-                                    cursor={false}
-                                    content={<ChartTooltipContent formatter={(value: any, name, props: any) => (
-                                        <div>
-                                            <p className="flex items-center gap-2">
-                                                {name == 'Venda' && <SquareCheck color={props.color} className={`w-4 h-4`} />}
-                                                {name == 'Venda' && name + ': ' + parseValueMoney(value)}
-                                            </p>
-                                            <p className="flex items-center gap-2">
-                                                {name == 'Meta' && <SquareCheck color={props.color} className={`w-4 h-4`} />}
-                                                {name == 'Meta' && name + ': ' + parseValueMoney(value)}
-                                            </p>
-                                        </div>
-                                    )} />}
-                                />
-                                <Legend />
-                                <CartesianGrid stroke="#f5f5f5" />
-                                <Bar dataKey="Venda" fill="#f9b233" />
-                                <Line type="monotone" dataKey="Meta" stroke="#e54757" strokeWidth={2} />
-                            </ComposedChart>
-                        </ChartContainer>
-                    </div>
-                </div>
-            }
+        }
+
+        fetchData()
+    }, [])
+
+    if (loading) {
+  return <Loading />
+}
+
+    return (
+        <div className='px-3 flex flex-col w-full animate__animated animate__fadeIn gap-4'>
+
+            <ChartBlock
+                data={data.loja}
+                color="#1a9cd9"
+                title="Evolução - Loja"
+            />
+
+            <ChartBlock
+                data={data.natur}
+                color="#f9b233"
+                title="Evolução - Natur"
+            />
+
         </div>
     )
 }

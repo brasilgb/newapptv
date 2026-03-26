@@ -44,11 +44,13 @@ export default function RootLayout({
             {isPublicPage && children}
             {!isPublicPage && (
               <PrivateRoute>
-                <Header />
-                <div className="flex-grow">
+               <div>
+                 <Header />
+                <div className="flex-grow py-2">
                   {children}
                 </div>
                 <Footer />
+               </div>
               </PrivateRoute>
             )}
           </AuthProvider>

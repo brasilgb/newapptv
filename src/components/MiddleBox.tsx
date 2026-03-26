@@ -17,24 +17,49 @@ interface MiddleBoxProps {
 
 const MiddleBox = (props: MiddleBoxProps) => {
     return (
-        <Card className='bg-gray-50 h-[100%]'>
-            <CardHeader className='p-0 px-2 border-b bg-gray-200 rounded-t-md'><span className='text-sm font-bold text-gray-500'>Análise {props.tipo}</span></CardHeader>
-            <CardContent className='flex flex-row justify-between gap-2 p-2'>
+        <Card className='bg-white h-full rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
+
+            {/* HEADER */}
+            <CardHeader className='px-3 py-2 border-b border-gray-100 bg-gray-50'>
+                <span className='text-sm font-semibold text-gray-700 tracking-tight'>
+                    Análise {props.tipo}
+                </span>
+            </CardHeader>
+
+            {/* KPIs */}
+            <CardContent className='flex flex-row justify-between gap-3 p-3'>
                 <KpiMiddleBox title="Meta" value={props?.meta} />
                 <KpiMiddleBox title="Vendas" value={props?.vendas} />
                 <KpiMiddleBox title="Falta Vender" value={props?.faltavender} />
             </CardContent>
-            <CardContent className='p-2'>
-                {props.dualchart &&
-                    <div className="grid grid-cols-2">
-                        <RadialMinChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
-                        <RadialMinChart title={'Performance'} label={'Meta Acumul.'} value={props?.acumuladames} departamento={props?.departamento} />
+
+            {/* CHART */}
+            <CardContent className='p-3'>
+                {props.dualchart ? (
+                    <div className="grid grid-cols-2 gap-4">
+                        <RadialMinChart
+                            title="Performance"
+                            label="Performance"
+                            value={props?.performance}
+                            departamento={props?.departamento}
+                        />
+                        <RadialMinChart
+                            title="Meta Acumul."
+                            label="Meta Acumul."
+                            value={props?.acumuladames}
+                            departamento={props?.departamento}
+                        />
                     </div>
-                }
-                {!props.dualchart &&
-                    <RadialMiddleChart title={'Performance'} label={'Performance'} value={props?.performance} departamento={props?.departamento} />
-                }
+                ) : (
+                    <RadialMiddleChart
+                        title="Performance"
+                        label="Performance"
+                        value={props?.performance}
+                        departamento={props?.departamento}
+                    />
+                )}
             </CardContent>
+
         </Card>
     )
 };

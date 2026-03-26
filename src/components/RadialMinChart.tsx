@@ -30,89 +30,95 @@ interface RadialChartProps {
 
 const RadialMinChart = ({ title, label, value, departamento }: RadialChartProps) => {
 
+    const safeValue = Math.max(0, Math.min(1, Number(value) || 0))
+
     const chartData = [
-        { browser: "safari", visitors: value, fill: "var(--color-safari)" },
+        { name: "progress", value: safeValue },
     ]
-    const chartConfig = {
-        visitors: {
-            label: "Visitors",
-        },
-        safari: {
-            label: "Safari",
-            color: departamento === 1 ? "#1a9cd9" : "#f9b233",
-        },
-    } satisfies ChartConfig
+
+    const color =
+        safeValue >= 1
+            ? "#22c55e"
+            : safeValue >= 0.7
+                ? (departamento === 1 ? "#1a9cd9" : "#f59e0b")
+                : "#ef4444"
 
     return (
-        <Card className="flex flex-col relative border-none shadow-none">
-            {/* <div className="flex self-end p-4 absolute text-gray-500"><Percent size={28} /></div> */}
-            {/* <CardHeader className="items-center pb-0">
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
-            </CardHeader> */}
-            <CardContent className="flex-1 p-4">
+        <Card className="flex flex-col border-none shadow-none">
+
+            {/* TITLE (bem discreto) */}
+            <span className="text-[10px] text-gray-400 text-center">
+                {title}
+            </span>
+
+            <CardContent className="flex-1 p-1">
                 <ChartContainer
-                    config={chartConfig}
-                    className="mx-auto aspect-square max-h-[160px]"
+                    className="mx-auto aspect-square max-h-[140px]"
+                    config={{}}
                 >
                     <RadialBarChart
                         data={chartData}
                         startAngle={90}
-                        endAngle={(value * 360) + 90}
-                        innerRadius={70}
-                        outerRadius={107}
+                        endAngle={90 - (safeValue * 360)}
+                        innerRadius={60}
+                        outerRadius={90}
                     >
+
+                        {/* TRACK */}
                         <PolarGrid
                             gridType="circle"
                             radialLines={false}
                             stroke="none"
-                            className="first:fill-[#e2e2e2] last:fill-white"
-                            polarRadius={[78, 64]}
+                            className="first:fill-gray-200 last:fill-white"
+                            polarRadius={[70, 55]}
                         />
-                        <RadialBar dataKey="visitors" background cornerRadius={10} />
-                        <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+
+                        <RadialBar
+                            dataKey="value"
+                            fill={color}
+                            cornerRadius={10}
+                            background={{ fill: "#e5e7eb" }}
+                        />
+
+                        <PolarRadiusAxis tick={false} axisLine={false}>
                             <Label
                                 content={({ viewBox }) => {
-                                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                        return (
-                                            <text
+                                    if (!viewBox || !("cx" in viewBox)) return null
+
+                                    return (
+                                        <text
+                                            x={viewBox.cx}
+                                            y={viewBox.cy}
+                                            textAnchor="middle"
+                                            dominantBaseline="middle"
+                                        >
+                                            {/* VALUE */}
+                                            <tspan
                                                 x={viewBox.cx}
                                                 y={viewBox.cy}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
+                                                className="fill-gray-800 text-lg font-bold"
                                             >
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={viewBox.cy}
-                                                    className="fill-foreground text-2xl font-bold"
-                                                >
-                                                    {(parseFloat(chartData[0].visitors) * 100).toFixed(0)}%
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="text-xs"
-                                                >
-                                                    {label}
-                                                </tspan>
-                                            </text>
-                                        )
-                                    }
+                                                {(safeValue * 100).toFixed(0)}%
+                                            </tspan>
+
+                                            {/* LABEL (opcional - bem leve) */}
+                                            <tspan
+                                                x={viewBox.cx}
+                                                y={(viewBox.cy || 0) + 14}
+                                                className="fill-gray-400 text-[9px]"
+                                            >
+                                                {label}
+                                            </tspan>
+                                        </text>
+                                    )
                                 }}
                             />
                         </PolarRadiusAxis>
+
                     </RadialBarChart>
                 </ChartContainer>
             </CardContent>
-            {/* <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                </div>
-                <div className="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </CardFooter> */}
         </Card>
     )
-};
+}
 export default RadialMinChart;

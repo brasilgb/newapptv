@@ -2,123 +2,162 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function NoSleepSilent() {
-  const videoRef = useRef(null);
+export default function NoSleepPro() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const wakeLockRef = useRef<any>(null); // Referência para o Wake Lock
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [lastPlayTime, setLastPlayTime] = useState(Date.now());
 
+  // 🔥 SOLICITAR WAKE LOCK (O padrão ouro para 2026)
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+        console.log('☀️ Wake Lock Ativo');
+      }
+    } catch (err: any) {
+      console.error(`Wake Lock falhou: ${err.message}`);
+    }
+  };
+
+  // 🔥 PLAY COM RETRY E WAKE LOCK
   const attemptPlay = async () => {
     if (!videoRef.current) return;
 
     try {
-      // Importante para TV: Resetar o tempo. Cast to HTMLVideoElement to access play()
-      const videoElement = videoRef.current as HTMLVideoElement;
-      videoElement.currentTime = 0;
-      
-      // Tenta tocar
-      await videoElement.play();
-      
-      // SUCESSO:
-      setIsPlaying(true);
-      setShowMenu(false); // Esconde o menu se funcionar
-      setErrorMessage('');
-      console.log('NoSleep: Ativo e rodando.');
+      await videoRef.current.play();
+      await requestWakeLock(); // Tenta travar a tela ligada aqui
 
-    } catch (err:any) {
-      // ERRO:
-      console.error("NoSleep: Bloqueado", err);
+      setIsPlaying(true);
+      setErrorMessage('');
+      setLastPlayTime(Date.now());
+      console.log('✅ NoSleep & WakeLock ativos');
+    } catch (err: any) {
+      console.log('❌ Falha autoplay:', err.message);
       setIsPlaying(false);
       setErrorMessage(err.message);
-      setShowMenu(true); // MOSTRA O MENU pois precisa de clique
+      // Se falhou, precisamos mostrar o menu para o usuário clicar
+      setShowMenu(true); 
+      
+      setTimeout(attemptPlay, 5000);
     }
   };
 
+  // 🚀 INIT
   useEffect(() => {
     attemptPlay();
+
+    // Reativa o Wake Lock se a aba voltar a ficar visível
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') requestWakeLock();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
+  // 🎮 CAPTURA INTERAÇÃO
+  useEffect(() => {
+    const unlock = () => {
+      if (!isPlaying) attemptPlay();
+    };
+
+    window.addEventListener('click', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => {
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, [isPlaying]);
+
   return (
-    <div style={{ position: 'fixed', zIndex: 9999, bottom: 10, right: 10, fontFamily: 'sans-serif' }}>
-      
-      {/* VÍDEO (Motor invisível) - Certifique-se que o arquivo está em /public/blank.mp4 */}
+    // Aumentei o zIndex e adicionei pointer-events auto no container
+    <div style={{ 
+      position: 'fixed', 
+      zIndex: 999999, 
+      bottom: 20, 
+      right: 20,
+      pointerEvents: 'auto' 
+    }}>
+
+      {/* 🎬 VÍDEO MOTOR (Mantenha o src correto) */}
       <video
         ref={videoRef}
         loop
         muted
         playsInline
-        preload="auto"
-        src="/apptv/blank.mp4" 
-        style={{ position: 'absolute', width: 1, height: 1, opacity: 0.01, pointerEvents: 'none' }}
+        src="/apptv/blank.mp4"
+        style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0 }}
       />
 
-      {/* --- BOTÃO/MENU DE CONTROLE (Só aparece se der erro ou se clicar na bolinha) --- */}
+      {/* ⚙️ MENU (MODAL) */}
       {showMenu && (
         <div style={{
-          backgroundColor: 'rgba(0,0,0,0.85)',
+          backgroundColor: '#1a1a1a',
           color: 'white',
-          padding: '12px',
-          borderRadius: '8px',
+          padding: '20px',
+          borderRadius: '12px',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '10px',
-          boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
-          fontSize: '12px',
-          maxWidth: '200px'
+          gap: '12px',
+          width: '240px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+          border: '1px solid #333',
+          marginBottom: '10px'
         }}>
-          {isPlaying ? (
-            <span style={{ color: '#2ecc71', fontWeight: 'bold' }}>✅ SISTEMA ATIVO</span>
-          ) : (
-            <span style={{ color: '#e74c3c', fontWeight: 'bold' }}>⚠️ AÇÃO NECESSÁRIA</span>
-          )}
+          <b style={{ fontSize: '16px' }}>Status da TV</b>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+             <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: isPlaying ? '#2ecc71' : '#e74c3c' }} />
+             <span>{isPlaying ? 'Tela Protegida' : 'Modo Dormir Ativo'}</span>
+          </div>
 
           {!isPlaying && (
             <button
-              onClick={attemptPlay}
+              onClick={(e) => {
+                e.stopPropagation();
+                attemptPlay();
+              }}
               style={{
                 backgroundColor: '#e74c3c',
-                color: 'white',
+                padding: '12px',
+                borderRadius: '8px',
                 border: 'none',
-                padding: '8px 12px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
+                color: 'white',
+                fontWeight: 'bold',
+                cursor: 'pointer'
               }}
             >
-              ATIVAR TELA
+              FORÇAR ATIVAÇÃO
             </button>
           )}
 
-          <div style={{ fontSize: '10px', color: '#ccc', textAlign: 'center' }}>
-             {isPlaying ? "A TV não entrará em standby." : errorMessage || "Clique para permitir vídeo."}
-          </div>
-          
-          <button 
+          <button
             onClick={() => setShowMenu(false)}
-            style={{ background: 'transparent', border: '1px solid #555', color: '#aaa', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '10px'}}
+            style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '12px' }}
           >
-            Fechar
+            Minimizar
           </button>
         </div>
       )}
 
-      {/* --- INDICADOR DISCRETO (Sempre presente, mas quase invisível) --- */}
-      <div 
-        onClick={() => setShowMenu(!showMenu)} // Clicar aqui abre/fecha o menu
-        title={isPlaying ? "NoSleep: Ativo" : "NoSleep: Parado"}
+      {/* 🔴 INDICADOR (BOTÃO DE CLIQUE) */}
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowMenu(!showMenu);
+        }}
         style={{
-          width: '12px',
-          height: '12px',
+          width: 25,
+          height: 25,
           borderRadius: '50%',
-          // Se estiver rodando: Verde bem clarinho e quase transparente
-          // Se estiver parado: Vermelho forte e pulsante para chamar atenção
           backgroundColor: isPlaying ? '#2ecc71' : '#e74c3c',
-          opacity: isPlaying ? 0.2 : 1, // Quase some se estiver tudo bem
+          opacity: showMenu ? 1 : 0.6,
+          boxShadow: isPlaying ? '0 0 5px #2ecc71' : '0 0 15px #e74c3c',
           cursor: 'pointer',
-          transition: 'opacity 0.3s',
-          boxShadow: isPlaying ? 'none' : '0 0 8px red'
+          marginLeft: 'auto'
         }}
       />
     </div>

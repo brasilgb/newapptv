@@ -8,9 +8,22 @@ interface KpiBigBoxProps {
 
 const KpiBigBox = (props: KpiBigBoxProps) => {
     return (
-        <div className='w-full border rounded-md'>
-            <h1 className='border-b text-lg p-2 px-2 font-medium text-gray-400'>{props?.title}</h1>
-            <div className='text-3xl px-2 py-4 font-bold'>{parseValueMoney(props.value)}</div>
+        <div className='w-full rounded-xl bg-gray-50 border border-gray-200 shadow-sm p-4 flex flex-col justify-between'>
+            
+            {/* TITLE */}
+            <span className='text-xs uppercase tracking-wide text-gray-500 font-semibold'>
+                {props?.title}
+            </span>
+
+            {/* VALUE */}
+            <div className={`
+  text-3xl md:text-4xl font-bold mt-1 
+  whitespace-nowrap flex items-center
+  ${props.value < 0 ? 'text-red-600' : 'text-gray-800'}
+`}>
+  {props.value < 0 ? `- ${parseValueMoney(Math.abs(props.value))}` : parseValueMoney(props.value)}
+</div>
+
         </div>
     )
 }

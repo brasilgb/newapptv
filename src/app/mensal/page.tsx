@@ -4,59 +4,124 @@ import MiddleBox from '@/components/MiddleBox';
 import birel from '@/services/birel';
 import React, { useEffect, useState } from 'react'
 import 'animate.css';
+import { useAuthContext } from '@/contexts/AuthContext';
+import Loading from '../loading';
 
-const AnaliseMensal = () => {
-  const [dataTvLoja, setDataTvLoja] = useState<any>([]);
-  const [dataTvNatur, setDataTvNatur] = useState<any>([]);
-  
-  useEffect(() => {
-    const getDataTv = async () => {
-      await birel.post('(APPTV_ANALISE_DEPTO)',{
-        departamento: 1
-      })
-        .then((res) => {
-          setDataTvLoja(res.data.bi091.bidata[0]);
-        }).catch((err) => {
-          console.log(err);
-        })
-    };
-    getDataTv();
-  }, []);
+const DepartmentColumn = ({ data, color, id, rounded }: any) => {
 
-  useEffect(() => {
-    const getDataTv = async () => {
-      await birel.post('(APPTV_ANALISE_DEPTO)',{
-        departamento: 5
-      })
-        .then((res) => {
-          setDataTvNatur(res.data.bi091.bidata[0]);
-        }).catch((err) => {
-          console.log(err);
-        })
-    };
-    getDataTv();
-  }, []);
-  
+  if (!data) return null
+
   return (
-    <>
-    <div className='grid grid-cols-2 px-2 animate__animated animate__fadeIn h-full min-h-[calc(100vh-82px)]'>
-      <div className='flex flex-col gap-2 bg-[#1a9cd9] p-2 rounded-l-md h-[100%]'>
-        <BigBox dualchart acumuladames={dataTvLoja?.MetaAcumuladames} meta={dataTvLoja?.MetaMes} vendas={dataTvLoja?.VendaMes} faltavender={dataTvLoja?.DiferencaMes} performance={dataTvLoja?.PerformanceMes} departamento={1} tipo={`Mês ${dataTvLoja?.Mes}`}/>
-        <div className='grid grid-cols-2 gap-2 h-[41.5%]'>
-          <MiddleBox meta={dataTvLoja?.MetaAcumuladaAno} vendas={dataTvLoja?.VendaAno} faltavender={dataTvLoja?.DiferencaAno} performance={dataTvLoja?.PerformanceAno} departamento={1} tipo={`Ano ${dataTvLoja?.Ano}`}/>
-          <MiddleBox meta={dataTvLoja?.MetaDia} vendas={dataTvLoja?.VendaDia} faltavender={dataTvLoja?.DiferencaDia} performance={dataTvLoja?.PerformanceDia} departamento={1} tipo={`Dia ${dataTvLoja?.Dia}`}/>
-        </div>
-      </div>
+    <div
+      className={`flex flex-col gap-2 p-2 ${rounded} h-full`}
+      style={{ backgroundColor: color }}
+    >
 
-      <div className='flex flex-col gap-2 bg-[#f9b233] p-2 rounded-r-md h-100%'>
-        <BigBox dualchart acumuladames={dataTvNatur?.MetaAcumuladames} meta={dataTvNatur?.MetaMes} vendas={dataTvNatur?.VendaMes} faltavender={dataTvNatur?.DiferencaMes} performance={dataTvNatur?.PerformanceMes} departamento={5} tipo={`Mês ${dataTvNatur?.Mes}`}/>
-        <div className='grid grid-cols-2 gap-2 h-[41.5%]'>
-          <MiddleBox meta={dataTvNatur?.MetaAcumuladaAno} vendas={dataTvNatur?.VendaAno} faltavender={dataTvNatur?.DiferencaAno} performance={dataTvNatur?.PerformanceAno} departamento={5} tipo={`Ano ${dataTvNatur?.Ano}`}/>
-          <MiddleBox meta={dataTvNatur?.MetaDia} vendas={dataTvNatur?.VendaDia} faltavender={dataTvNatur?.DiferencaDia} performance={dataTvNatur?.PerformanceDia} departamento={5} tipo={`Dia ${dataTvNatur?.Dia}`}/>
-        </div>
+      {/* 🔥 FOCO NO MÊS */}
+      <BigBox
+        dualchart
+        acumuladames={data?.MetaAcumuladames}
+        meta={data?.MetaMes}
+        vendas={data?.VendaMes}
+        faltavender={data?.DiferencaMes}
+        performance={data?.PerformanceMes}
+        departamento={id}
+        tipo={`Mês ${data?.Mes}`}
+      />
+
+      {/* 🔽 SECUNDÁRIOS */}
+      <div className='grid grid-cols-2 gap-2 flex-1'>
+
+        <MiddleBox
+          meta={data?.MetaAcumuladaAno}
+          vendas={data?.VendaAno}
+          faltavender={data?.DiferencaAno}
+          performance={data?.PerformanceAno}
+          departamento={id}
+          tipo={`Ano ${data?.Ano}`}
+        />
+
+        <MiddleBox
+          meta={data?.MetaDia}
+          vendas={data?.VendaDia}
+          faltavender={data?.DiferencaDia}
+          performance={data?.PerformanceDia}
+          departamento={id}
+          tipo={`Dia ${data?.Dia}`}
+        />
+
       </div>
     </div>
-  </>
+  )
+}
+
+const AnaliseMensal = () => {
+  const { loading, setLoading } = useAuthContext();
+
+  const [data, setData] = useState<any>({
+    loja: null,
+    natur: null
+  })
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const [lojaRes, naturRes] = await Promise.all([
+        birel.post('(APPTV_ANALISE_DEPTO)', { departamento: 1 }),
+        birel.post('(APPTV_ANALISE_DEPTO)', { departamento: 5 }),
+      ])
+
+      setData({
+        loja: lojaRes.data.bi091.bidata[0],
+        natur: naturRes.data.bi091.bidata[0],
+      })
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+
+    // 🔥 AUTO REFRESH (TV)
+    const interval = setInterval(fetchData, 1000 * 60 * 2)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  if (!data.loja || !data.natur) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-xl">
+        Carregando dados...
+      </div>
+    )
+  }
+
+  if (loading) {
+  return <Loading />
+}
+
+  return (
+    <div className='grid grid-cols-2 px-2 animate__animated animate__fadeIn min-h-[calc(100vh-82px)]'>
+
+      <DepartmentColumn
+        id={1}
+        data={data.loja}
+        color="#1a9cd9"
+        rounded="rounded-l-md"
+      />
+
+      <DepartmentColumn
+        id={5}
+        data={data.natur}
+        color="#f9b233"
+        rounded="rounded-r-md"
+      />
+
+    </div>
   )
 }
 
